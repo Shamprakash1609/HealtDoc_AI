@@ -1,0 +1,24 @@
+# --- Existing Dependencies ---
+fastapi
+uvicorn
+python-multipart
+langchain
+langchain-google-genai
+langchain-community
+pypdf
+faiss-cpu
+python-dotenv
+langchain-huggingface
+sentence-transformers
+
+# --- Medical AI Dependencies ---
+transformers
+torch
+torchvision
+accelerate
+Pillow
+paddleocr
+paddlepaddle
+huggingface_hub
+pdf2image
+pypdfium2

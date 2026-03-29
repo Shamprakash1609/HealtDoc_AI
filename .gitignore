@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+.env*
+.venv
+env/
+ENV/
+
+# OS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Node
+node_modules/
+package-lock.json
+
+# IDEs
+.idea/
+.vscode/
+
+# Project specific data directories
+faiss_index/
+medical_reports/
+medical_uploads/
+uploads/
+backend/medical_ai/models/
+backend/faiss_index/
+
+# Application specific
+.agent/
+Agent Skills/
+
+# Large files
+*.safetensors
+*.ckpt
+*.pt
+*.bin
+*.h5
+
+# Any secret files
+*.env

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthDoc | AI Healthcare Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- ── Ambient Background Animation ── -->
+    <div class="ambient-bg">
+        <div class="ambient-blob blob-1"></div>
+        <div class="ambient-blob blob-2"></div>
+        <div class="ambient-blob blob-3"></div>
+    </div>
+
+    <!-- ── Floating Navbar ── -->
+    <div class="navbar-wrapper">
+        <nav class="navbar glass" id="navbar">
+            <a href="#" class="nav-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="24" height="24" rx="6" fill="#00E87E" />
+                    <path d="M11 7v4H7v2h4v4h2v-4h4v-2h-4V7h-2z" fill="white" />
+                </svg>
+                HealthDoc
+            </a>
+            <ul class="nav-links">
+                <li><a href="pages/MedCopilot.html" class="nav-link">Med Copilot</a></li>
+                <li><a href="pages/SmartReports.html" class="nav-link">Smart Reports</a></li>
+                <li><a href="pages/EpiForecast.html" class="nav-link">EpiForecast</a></li>
+                <li><a href="#health-insights" class="nav-link">Insights Dashboard</a></li>
+                <li><a href="#nutriplan" class="nav-link">NutriPlan</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="#" class="nav-login">Login</a>
+                <a href="#cta" class="btn btn-primary">Get Started</a>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Menu">
+                <svg viewBox="0 0 24 24">
+                    <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+            </button>
+        </nav>
+    </div>
+
+    <!-- ── Hero Section ── -->
+    <section class="hero section">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <h1 class="reveal-text">AI-Powered Healthcare Intelligence for the Modern World</h1>
+                <p class="reveal-text">Analyze medical reports, monitor disease outbreaks, and gain actionable health
+                    insights using AI.</p>
+                <div class="hero-buttons reveal-text">
+                    <a href="#cta" class="btn btn-primary">Start Free</a>
+                    <a href="#features" class="btn btn-secondary">Explore Platform</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-mockup-wrapper">
+                    <div class="ui-frame-header">
+                        <div class="ui-dot"></div>
+                        <div class="ui-dot"></div>
+                        <div class="ui-dot"></div>
+                    </div>
+                    <!-- Using generated mockup -->
+                    <img src="assets/artistic_hero_v2.png" alt="Artistic HealthDoc AI Dashboard Concept">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Feature Section (Bento Grid) ── -->
+    <section class="features section scroll-reveal" id="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Features</span>
+                <h2>Everything your health needs, in one intelligent platform</h2>
+            </div>
+            <div class="bento-grid">
+                <!-- Large Card -->
+                <div class="bento-card large card-purple" id="report-intel">
+                    <div class="bento-icon">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Report Intelligence</h3>
+                        <p>Upload blood tests or medical reports and receive AI-powered analysis with risk flags,
+                            explained in plain language.</p>
+                    </div>
+                </div>
+
+                <!-- Medium Cards -->
+                <div class="bento-card card-cyan" id="med-copilot">
+                    <div class="bento-icon">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3>Med Copilot</h3>
+                    <p>AI assistant for medical questions, providing evidence-based answers contextualised to your
+                        history.</p>
+                </div>
+
+                <a href="pages/EpiForecast.html" class="bento-card card-coral" id="outbreak-intel"
+                    style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s;">
+                    <div class="bento-icon">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3>Outbreak Intelligence / EpiForecast</h3>
+                    <p>Interactive real-time disease monitoring and predictive forecasting powered by epidemiological
+                        models.</p>
+                </a>
+
+                <div class="bento-card card-green" id="nutriplan">
+                    <div class="bento-icon">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3>NutriPlan</h3>
+                    <p>AI-generated nutrition recommendations calibrated to your lab results and ultimate health goals.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── How It Works Section ── -->
+    <section class="how-it-works section scroll-reveal" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Process</span>
+                <h2>From raw data to actionable insights</h2>
+            </div>
+
+            <div class="steps-container">
+                <div class="step-line">
+                    <div class="step-line-progress" id="step-progress"></div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Upload Medical Report</h3>
+                    <p>Drop any medical document — PDF, image, or scan into the platform.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>AI Analysis</h3>
+                    <p>Our intelligent models extract, parse, and interpret every metric.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Risk Insights</h3>
+                    <p>See potential issues flagged instantly with clear severity scores.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Smart Recommendations</h3>
+                    <p>Receive actionable next steps personalised to your health profile.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Disease Intelligence Preview ── -->
+    <section class="preview-section section scroll-reveal" id="disease-intelligence">
+        <div class="container preview-grid">
+            <div class="preview-content">
+                <span class="section-tag">Disease Intelligence</span>
+                <h2>Track regional outbreaks in real-time</h2>
+                <p>Stay ahead of health threats with live surveillance driven by epidemiological modeling and local data
+                    endpoints.</p>
+            </div>
+
+            <div class="preview-visual ui-frame">
+                <div class="ui-frame-header">
+                    <div class="ui-dot"></div>
+                    <div class="ui-dot"></div>
+                    <div class="ui-dot"></div>
+                </div>
+                <div class="ui-frame-body">
+                    <div class="heatmap-placeholder">
+                        Live City Heatmap Preview
+                    </div>
+
+                    <div class="alert-card warning">
+                        <div>
+                            <h4>Dengue cases increasing in Chennai</h4>
+                            <p>Forecast increase: +28% over 7 days</p>
+                        </div>
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="orange">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
+                        </svg>
+                    </div>
+
+                    <div class="alert-card">
+                        <div>
+                            <h4>H1N1 Outbreak contained in Mumbai</h4>
+                            <p>Forecast decrease: -12% over 5 days</p>
+                        </div>
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="var(--color-primary)">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Dashboard Preview Section ── -->
+    <section class="preview-section section scroll-reveal" id="health-insights">
+        <div class="container preview-grid reverse">
+            <div class="preview-content">
+                <span class="section-tag">Health Insights</span>
+                <h2>Your ultimate health control center</h2>
+                <p>Monitor your most vital metrics over time. Spot trends, understand your body better, and intervene
+                    early before small issues become big problems.</p>
+            </div>
+
+            <div class="preview-visual ui-frame">
+                <div class="ui-frame-header">
+                    <div class="ui-dot"></div>
+                    <div class="ui-dot"></div>
+                    <div class="ui-dot"></div>
+                </div>
+                <div class="ui-frame-body" style="background-color: var(--color-bg);">
+                    <div class="dash-metrics">
+                        <div class="metric-card">
+                            <h4>Overall Health Score</h4>
+                            <div class="value text-primary">86<span class="unit">/100</span></div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Resting Heart Rate</h4>
+                            <div class="value">68<span class="unit">bpm</span></div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Blood Pressure</h4>
+                            <div class="value">118/76<span class="unit">mmHg</span></div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Avg Sleep</h4>
+                            <div class="value">7h 20m<span class="unit">nightly</span></div>
+                        </div>
+                    </div>
+                    <div
+                        style="height: 120px; border: 1px dashed var(--color-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--color-text-mutated); font-weight: 600;">
+                        30-Day Trend Chart Preview
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Social Proof Section ── -->
+    <section class="social-proof section scroll-reveal" id="trust">
+        <div class="container">
+            <div class="section-header">
+                <h2>Built with medical-grade trust and security</h2>
+            </div>
+
+            <div class="trust-badges">
+                <div class="trust-card card-cyan">
+                    <div class="trust-icon">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3>HIPAA-ready</h3>
+                    <p>Designed to comply strictly with US federal privacy standards.</p>
+                </div>
+
+                <div class="trust-card card-green">
+                    <div class="trust-icon">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3>Secure & Encrypted</h3>
+                    <p>AES-256 bit encryption ensures your data remains strictly yours.</p>
+                </div>
+
+                <div class="trust-card card-purple">
+                    <div class="trust-icon">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3>Medical-grade AI</h3>
+                    <p>Fine-tuned exclusively on verified medical literature and reports.</p>
+                </div>
+
+                <div class="trust-card card-gold">
+                    <div class="trust-icon">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                        </svg>
+                    </div>
+                    <h3>Built with Open Models</h3>
+                    <p>Transparent architectures combining open-source safety and capability.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Final CTA Section ── -->
+    <section class="cta-section scroll-reveal" id="cta">
+        <div class="container cta-content">
+            <h2><span class="gradient-text">Take Control</span> of Your Health with AI</h2>
+            <p style="max-width: 500px; margin: 0 auto calc(var(--space-unit)*8); font-size: 20px;">Join thousands who
+                are using HealthDoc to unlock the full potential of their personal medical data.</p>
+            <a href="#" class="btn btn-primary"
+                style="font-size: 18px; padding: calc(var(--space-unit)*4) calc(var(--space-unit)*8);">Start Free</a>
+        </div>
+    </section>
+
+    <!-- ── Footer ── -->
+    <footer class="footer scroll-reveal">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h2>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                            style="display:inline-block; vertical-align: middle; margin-right: 4px;">
+                            <rect width="24" height="24" rx="6" fill="#00E87E" />
+                            <path d="M11 7v4H7v2h4v4h2v-4h4v-2h-4V7h-2z" fill="white" />
+                        </svg>
+                        HealthDoc
+                    </h2>
+                    <p>Building the intelligent data layer for modern healthcare.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="pages/MedCopilot.html">Med Copilot</a></li>
+                        <li><a href="pages/SmartReports.html">Report Intelligence</a></li>
+                        <li><a href="#outbreak-intel">Outbreak Intelligence</a></li>
+                        <li><a href="#health-insights">Health Insights</a></li>
+                        <li><a href="#nutriplan">NutriPlan</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API Reference</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Community</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">HIPAA Compliance</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><a href="#">Support</a></li>
+                        <li><a href="#">Sales</a></li>
+                        <li><a href="#">Partnerships</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                &copy; <span id="year">2026</span> HealthDoc Intelligence, Inc. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- ── Interaction Scripts ── -->
+    <script src="js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Reports | HealthDoc AI</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Marked parser for explanations -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/styles.css"> <!-- Base styles for nav/footer -->
+    <link rel="stylesheet" href="../css/smart_reports.css">
+</head>
+
+<body>
+    <!-- ── Ambient Background Animation ── -->
+    <div class="ambient-bg">
+        <div class="ambient-blob blob-1"></div>
+        <div class="ambient-blob blob-2"></div>
+        <div class="ambient-blob blob-3"></div>
+    </div>
+
+    <!-- ── Floating Navbar ── -->
+    <div class="navbar-wrapper">
+        <nav class="navbar glass" id="navbar">
+            <a href="../index.html" class="nav-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="24" height="24" rx="6" fill="#00E87E" />
+                    <path d="M11 7v4H7v2h4v4h2v-4h4v-2h-4V7h-2z" fill="white" />
+                </svg>
+                HealthDoc
+            </a>
+            <ul class="nav-links">
+                <li><a href="MedCopilot.html" class="nav-link">Med Copilot</a></li>
+                <li><a href="SmartReports.html" class="nav-link active">Smart Reports</a></li>
+                <li><a href="EpiForecast.html" class="nav-link">EpiForecast</a></li>
+                <li><a href="../index.html#health-insights" class="nav-link">Insights Dashboard</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="#" class="nav-login">Login</a>
+                <a href="../index.html#cta" class="btn btn-primary">Get Started</a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- ── Hero Section ── -->
+    <section class="reports-hero">
+        <div class="container">
+            <span class="section-tag"
+                style="display:inline-block; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--color-primary); padding:4px 12px; background:rgba(42,191,255,0.1); border-radius:30px; margin-bottom:16px;">Intelligence</span>
+            <h1><span class="gradient-text">Clinical Grade</span> Analysis</h1>
+            <p>Upload blood test reports or medical imaging for instant, AI-powered insights mapped to your personal
+                health baseline.</p>
+        </div>
+    </section>
+
+    <!-- ── Report Analysis Module ── -->
+    <section class="container" style="margin-bottom: 64px;">
+        <div class="analyzer-card card-cyan" style="max-width: 800px; margin: 0 auto;">
+            <div class="analyzer-header text-center"
+                style="display: flex; flex-direction: column; align-items: center;">
+                <div class="bento-icon">
+                    <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                    </svg>
+                </div>
+                <h2>Report Intelligence</h2>
+                <p style="max-width: 500px; margin-bottom: 24px;">Upload lab results (PDF or Image) to extract precise
+                    metrics, detect clinical risks, and receive personalized precautions.</p>
+            </div>
+
+            <div class="drop-zone" id="report-drop">
+                <div class="upload-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"></path>
+                    </svg>
+                </div>
+                <span style="color:var(--color-text-mutated); font-weight:600;">Drop your lab report or <span
+                        class="text-primary">click to browse</span></span>
+                <input type="file" id="report-file" accept=".pdf,.png,.jpg,.jpeg">
+                <div class="file-preview-area" id="report-filename"></div>
+            </div>
+
+            <div class="action-row" style="justify-content: center; gap: 24px;">
+                <button class="btn btn-primary" id="analyze-report-btn" disabled>Analyze Report</button>
+                <span class="status-text" id="report-status">Ready</span>
+            </div>
+        </div>
+
+        <!-- Report Dashboard -->
+        <div class="ui-frame" id="report-results" style="max-width: 800px; margin: 32px auto 0;">
+            <div class="ui-frame-header">
+                <div class="ui-dot"></div>
+                <div class="ui-dot"></div>
+                <div class="ui-dot"></div>
+                <div class="frame-title" id="report-dashboard-title">Clinical Dashboard</div>
+            </div>
+            <div class="ui-frame-body">
+                <h3 style="margin-bottom: 16px; font-size: 20px;">Extracted Biomarkers</h3>
+                <div class="metrics-grid" id="metrics-grid">
+                    <!-- Metrics injected here -->
+                </div>
+
+                <div class="risk-container">
+                    <h3 class="risk-heading">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                            </path>
+                        </svg>
+                        Clinical Risk Flags
+                    </h3>
+                    <div id="risk-list">
+                        <!-- Risks injected here -->
+                    </div>
+                </div>
+
+                <h3 style="margin-bottom: 16px; font-size: 20px;">AI Synthesis & Next Steps</h3>
+                <div class="explanation-panel">
+                    <div class="markdown-body" id="report-explanation"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Image Analysis Module ── -->
+    <section class="container" style="margin-bottom: 96px;">
+        <div class="analyzer-card card-purple" style="max-width: 800px; margin: 0 auto;">
+            <div class="analyzer-header text-center"
+                style="display: flex; flex-direction: column; align-items: center;">
+                <div class="bento-icon">
+                    <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                </div>
+                <h2>Image Intelligence</h2>
+                <p style="max-width: 500px; margin-bottom: 24px;">Upload X-Rays, MRI, or CT scans. Powered by MedGemma
+                    for state-of-the-art visual anatomical insights.</p>
+            </div>
+
+            <div class="drop-zone" id="image-drop">
+                <div class="upload-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12"></path>
+                    </svg>
+                </div>
+                <span style="color:var(--color-text-mutated); font-weight:600;">Drop medical imagery or <span
+                        style="color:var(--color-purple)">click to browse</span></span>
+                <input type="file" id="image-file" accept=".png,.jpg,.jpeg,.tiff,.bmp">
+
+                <div class="image-preview-wrapper" id="image-preview-container">
+                    <img id="image-preview-img" src="" alt="Scan Preview">
+                </div>
+            </div>
+
+            <div class="action-row" style="justify-content: center; gap: 24px;">
+                <button class="btn btn-primary" id="analyze-image-btn"
+                    style="background-color: var(--color-purple); box-shadow: 0 8px 16px rgba(157, 78, 221, 0.2);"
+                    disabled>Analyze Image</button>
+                <span class="status-text" id="image-status">Ready</span>
+            </div>
+        </div>
+
+        <!-- Image Dashboard -->
+        <div class="ui-frame" id="image-results" style="max-width: 800px; margin: 32px auto 0;">
+            <div class="ui-frame-header" style="background: rgba(157, 78, 221, 0.05);">
+                <div class="ui-dot"></div>
+                <div class="ui-dot"></div>
+                <div class="ui-dot"></div>
+                <div class="frame-title">MedGemma Visual Intelligence</div>
+            </div>
+            <div class="ui-frame-body">
+                <div id="diagnosis-header"></div>
+                <div class="explanation-panel">
+                    <div class="markdown-body" id="image-analysis"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Footer ── -->
+    <footer class="footer scroll-reveal" style="background: var(--color-surface); padding: 64px 0 32px;">
+        <div class="container text-center">
+            <h2 style="font-size: 24px; margin-bottom: 16px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    style="display:inline-block; vertical-align: middle;">
+                    <rect width="24" height="24" rx="6" fill="#00E87E" />
+                    <path d="M11 7v4H7v2h4v4h2v-4h4v-2h-4V7h-2z" fill="white" />
+                </svg>
+                HealthDoc Intelligence
+            </h2>
+            <p style="margin-bottom: 32px;">Building the intelligent data layer for modern healthcare.</p>
+            <p style="font-size: 14px; color: var(--color-text-mutated);">&copy; 2026 HealthDoc Intelligence, Inc. All
+                rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../js/script.js"></script> <!-- Navbar scroll logic -->
+    <script src="../js/smart_reports.js"></script>
+</body>
+
+</html>

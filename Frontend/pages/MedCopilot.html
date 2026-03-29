@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Med Copilot | HealthDoc AI</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Marked parser for chat explanations -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/styles.css?v=5"> <!-- Base styles for nav/footer/ambient bg -->
+    <link rel="stylesheet" href="../css/med_copilot.css?v=5"> <!-- Specific chat UI styles -->
+</head>
+
+<body>
+    <!-- ── Ambient Background Animation ── -->
+    <div class="ambient-bg">
+        <div class="ambient-blob blob-1"></div>
+        <div class="ambient-blob blob-2"></div>
+        <div class="ambient-blob blob-3"></div>
+    </div>
+
+    <!-- ── Floating Navbar ── -->
+    <div class="navbar-wrapper">
+        <nav class="navbar glass" id="navbar">
+            <a href="../index.html" class="nav-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="24" height="24" rx="6" fill="#00E87E" />
+                    <path d="M11 7v4H7v2h4v4h2v-4h4v-2h-4V7h-2z" fill="white" />
+                </svg>
+                HealthDoc
+            </a>
+            <ul class="nav-links">
+                <li><a href="MedCopilot.html" class="nav-link active">Med Copilot</a></li>
+                <li><a href="SmartReports.html" class="nav-link">Smart Reports</a></li>
+                <li><a href="EpiForecast.html" class="nav-link">EpiForecast</a></li>
+                <li><a href="../index.html#health-insights" class="nav-link">Insights Dashboard</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="#" class="nav-login">Login</a>
+                <a href="../index.html#cta" class="btn btn-primary">Get Started</a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- ── Copilot Interface ── -->
+    <main class="copilot-container">
+
+        <div class="copilot-header text-center">
+            <span class="section-tag"
+                style="display:inline-block; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--color-primary); padding:4px 12px; background:rgba(42,191,255,0.1); border-radius:30px; margin-bottom:12px;">AI
+                Assistant</span>
+            <h1 style="margin-bottom: 8px; color: #0A0A0A; font-weight: 700;">HealthDoc <span
+                    style="color: var(--color-primary);">Copilot</span></h1>
+            <p style="color: #4A4A4A; font-size: 16px; font-weight: 500;">Your intelligent, privacy-first medical
+                companion.</p>
+        </div>
+
+        <div class="chat-wrapper ui-frame">
+            <div class="ui-frame-header">
+                <div class="ui-dot"></div>
+                <div class="ui-dot"></div>
+                <div class="ui-dot"></div>
+                <div class="frame-title">MedGemma Terminal</div>
+            </div>
+
+            <div class="chat-history" id="chat-history">
+                <!-- Welcome Message Bubble -->
+                <div class="chat-bubble ai-bubble">
+                    <div class="bubble-avatar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="24" height="24" rx="6" fill="#2ABFFF" />
+                            <circle cx="12" cy="12" r="5" fill="white" />
+                        </svg>
+                    </div>
+                    <div class="bubble-content">
+                        Hello! I am Med Copilot, powered by MedGemma. I'm here to help you understand medical topics,
+                        symptoms, and health strategies. How can I assist you today?
+                        <br>
+                        <span style="font-size: 11px; opacity: 0.7; margin-top:8px; display:block;">Disclaimer: I am an
+                            AI, not a doctor. Please consult a healthcare professional for serious concerns.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="chat-input-area">
+                <!-- Floating Suggestions Panel -->
+                <div class="suggestions-panel">
+                    <div class="suggestions-wrapper" id="suggestions-wrapper">
+                        <button class="suggestion-pill">What causes high cholesterol and how can I fix it?</button>
+                        <button class="suggestion-pill">What are the early signs of Type 2 Diabetes?</button>
+                        <button class="suggestion-pill">How can I naturally lower my blood pressure?</button>
+                    </div>
+                </div>
+
+                <form id="chat-form" style="display: flex; width: 100%; gap: 12px; align-items: flex-end;">
+                    <div class="input-wrapper">
+                        <textarea id="chat-textarea" placeholder="Type your health or medical question here..."
+                            rows="1"></textarea>
+                    </div>
+                    <button type="submit" class="send-btn" id="send-btn" aria-label="Send">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../js/script.js?v=5"></script> <!-- Navbar logic -->
+    <script src="../js/med_copilot.js?v=5"></script>
+</body>
+
+</html>

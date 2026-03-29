@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EpiForecast | HealthDoc AI</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for real-time visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/styles.css"> <!-- Base styles for nav/footer/ambient bg -->
+    <link rel="stylesheet" href="../css/epi_forecast.css"> <!-- Specific Simulation UI styles -->
+</head>
+
+<body>
+    <!-- ── Ambient Background Animation ── -->
+    <div class="ambient-bg">
+        <div class="ambient-blob blob-1"
+            style="background: radial-gradient(circle, rgba(0, 232, 126, 0.15) 0%, transparent 70%);"></div>
+        <div class="ambient-blob blob-2"
+            style="background: radial-gradient(circle, rgba(255, 123, 114, 0.1) 0%, transparent 70%);"></div>
+        <div class="ambient-blob blob-3"></div>
+    </div>
+
+    <!-- ── Floating Navbar ── -->
+    <div class="navbar-wrapper">
+        <nav class="navbar glass" id="navbar">
+            <a href="../index.html" class="nav-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="24" height="24" rx="6" fill="#00E87E" />
+                    <path d="M11 7v4H7v2h4v4h2v-4h4v-2h-4V7h-2z" fill="white" />
+                </svg>
+                HealthDoc
+            </a>
+            <ul class="nav-links">
+                <li><a href="MedCopilot.html" class="nav-link">Med Copilot</a></li>
+                <li><a href="SmartReports.html" class="nav-link">Smart Reports</a></li>
+                <li><a href="EpiForecast.html" class="nav-link active">EpiForecast</a></li>
+                <li><a href="../index.html#health-insights" class="nav-link">Insights Dashboard</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="#" class="nav-login">Login</a>
+                <a href="../index.html#cta" class="btn btn-primary">Get Started</a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- ── Dashboard Container ── -->
+    <main class="epi-container">
+        <div class="epi-header text-center">
+            <span class="section-tag">Interactive Simulation</span>
+            <h1>EpiForecast <span class="coral-accent">Engine</span></h1>
+            <p>Real-time epidemic modeling and spatial analysis.</p>
+        </div>
+
+        <div class="bento-grid-dashboard">
+            <!-- Left Column: Controls and Analytics -->
+            <div class="dashboard-controls">
+
+                <!-- Chart Module -->
+                <div class="bento-card analytics-card glass">
+                    <div class="card-header">
+                        <h3>Population Tracking</h3>
+                        <div class="legend-pills">
+                            <span class="legend-pill susceptible">Susceptible</span>
+                            <span class="legend-pill infected">Infected</span>
+                            <span class="legend-pill removed">Removed</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="epiChart"></canvas>
+                        <!-- Custom Floating Legend -->
+                        <div id="chart-legend" class="chart-legend">
+                            <div class="legend-row"><span class="legend-color removed"></span><span
+                                    id="pct-removed">0.0%</span> removed</div>
+                            <div class="legend-row"><span class="legend-color susceptible"></span><span
+                                    id="pct-susceptible">99.0%</span> susceptible</div>
+                            <div class="legend-row"><span class="legend-color infected"></span><span
+                                    id="pct-infected">1.0%</span> infected</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parameters Module -->
+                <div class="bento-card controls-card glass">
+                    <div class="card-header">
+                        <h3>Simulation Parameters</h3>
+                        <button id="reset-sim-btn" class="btn btn-secondary btn-sm">Reset</button>
+                    </div>
+                    <div class="sliders-list">
+
+                        <!-- Radius Slider -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label for="infectionRadius">Infection Radius</label>
+                                <span id="val-infectionRadius" class="value-display">0.1</span>
+                            </div>
+                            <input type="range" id="infectionRadius" min="0" max="0.5" step="0.01" value="0.1">
+                        </div>
+
+                        <!-- Infection Chance Slider -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label for="infectionChance">Daily Infection Chance (%)</label>
+                                <span id="val-infectionChance" class="value-display">6</span>
+                            </div>
+                            <input type="range" id="infectionChance" min="0" max="100" step="1" value="6">
+                        </div>
+
+                        <!-- Infection Duration Slider -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label for="infectionDuration">Duration (Days)</label>
+                                <span id="val-infectionDuration" class="value-display">25</span>
+                            </div>
+                            <input type="range" id="infectionDuration" min="1" max="100" step="1" value="25">
+                        </div>
+
+                        <!-- Initial Infection Slider -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label for="initialInfection">Initial Infection (%)</label>
+                                <span id="val-initialInfection" class="value-display">1</span>
+                            </div>
+                            <input type="range" id="initialInfection" min="0.5" max="20" step="0.5" value="1">
+                        </div>
+
+                        <!-- Social Distancing Factor -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label for="distancingFactor">Social Distancing Factor</label>
+                                <span id="val-distancingFactor" class="value-display">0</span>
+                            </div>
+                            <input type="range" id="distancingFactor" min="0" max="1" step="0.1" value="0">
+                        </div>
+
+                        <!-- Compliance Percentage -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label for="compliancePct">Population Obeys Distancing (%)</label>
+                                <span id="val-compliancePct" class="value-display">100</span>
+                            </div>
+                            <input type="range" id="compliancePct" min="0" max="100" step="5" value="100">
+                        </div>
+
+                        <!-- Central Visit Chance -->
+                        <div class="slider-group extra-param" id="param-central">
+                            <div class="slider-header">
+                                <label for="centralChance">Central Visit Chance (%)</label>
+                                <span id="val-centralChance" class="value-display">0.4</span>
+                            </div>
+                            <input type="range" id="centralChance" min="0" max="5" step="0.1" value="0.4">
+                        </div>
+
+                        <!-- Community Travel Chance -->
+                        <div class="slider-group extra-param" id="param-travel">
+                            <div class="slider-header">
+                                <label for="travelChance">Community Travel Chance (%)</label>
+                                <span id="val-travelChance" class="value-display">2</span>
+                            </div>
+                            <input type="range" id="travelChance" min="0" max="10" step="0.5" value="2">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Canvas Simulation -->
+            <div class="dashboard-simulation">
+                <div class="ui-frame glass simulation-frame">
+                    <div class="ui-frame-header">
+                        <div class="ui-dot"></div>
+                        <div class="ui-dot"></div>
+                        <div class="ui-dot"></div>
+                        <div class="frame-title">Particle Engine Runtime <span id="day-counter">Day 0</span></div>
+                        <div class="simulation-actions" style="display:flex; align-items:center; gap: 12px;">
+                            <label class="quarantine-toggle">
+                                <input type="checkbox" id="quarantineCheck">
+                                <span class="checkmark"></span>
+                                Quarantine
+                            </label>
+                            <button id="toggle-sim-btn" class="btn btn-primary btn-sm">Pause</button>
+                        </div>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="simulationCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Mode Toggles -->
+                <div class="simulation-modes">
+                    <button class="mode-btn active" data-mode="simple">SIMPLE</button>
+                    <button class="mode-btn" data-mode="central">CENTRAL LOCATION</button>
+                    <button class="mode-btn" data-mode="communities">COMMUNITIES</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Scripts -->
+    <script src="../js/script.js"></script> <!-- Navbar logic -->
+    <script src="../js/epi_simulator.js"></script> <!-- Core Physics Engine -->
+</body>
+
+</html>
