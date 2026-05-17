@@ -131,6 +131,6 @@ Once started, the interactive API documentation (Swagger UI) will be available a
 ## 💻 5. Running the Frontend
 
 To view and interact with the user interface:
-1. Open the [Frontend](file:///Users/shamprakashr/Documents/PerfectUnit😎🥳🚀/Projects/healthdocAi/HealthDoc/Frontend) directory.
-2. Double-click or open [index.html](file:///Users/shamprakashr/Documents/PerfectUnit😎🥳🚀/Projects/healthdocAi/HealthDoc/Frontend/index.html) in your favorite web browser.
+1. Open the [Frontend](./Frontend) directory.
+2. Double-click or open [index.html](./Frontend/index.html) in your favorite web browser.
 3. Start chatting with **MedGemma** and uploading medical documents locally!
