@@ -53,6 +53,11 @@ backend/faiss_index/
 .agent/
 Agent Skills/
 
+# ── File-based user database (never commit user data) ──
+backend/database/users.json
+backend/database/sessions.json
+backend/database/patients/
+
 # Large files
 *.safetensors
 *.ckpt

@@ -1,10 +1,14 @@
 /**
  * NutriPlan Calculator — HealthDoc AI
  * Pure vanilla JS: BMR (Mifflin-St Jeor) → TDEE → Goal Adjustment → Macros
+ * Auto-saves to backend when user is logged in.
  */
 
 (function () {
     'use strict';
+
+    const API = 'http://127.0.0.1:8000';
+    let _saveDebounce = null;
 
     // ── DOM References ──
     const ageInput       = document.getElementById('age-input');
@@ -248,6 +252,28 @@
         adjustmentResult.textContent = adjustment === 0
             ? '0 kcal'
             : `${adjustment > 0 ? '+' : ''}${adjustment.toLocaleString()} kcal`;
+
+        // ── Auto-save to backend if logged in ──
+        scheduleBackendSave({
+            age,
+            gender,
+            weight_kg:  Math.round(weightKg * 10) / 10,
+            height_cm:  Math.round(heightCm * 10) / 10,
+            activity_level: activity,
+            goal: String(goalPct),
+            calories: targetCals,
+            protein_g: proteinG,
+            fat_g: fatG,
+            carb_g: carbG,
+            protein_pct: pPct,
+            fat_pct: fPct,
+            carb_pct: cPct,
+            bmr,
+            tdee,
+            weekly_change_kg: weeklyKgRounded,
+            diet_type: dietSelect.value,
+            protein_target_g_per_kg: proteinGPerKg,
+        });
     }
 
     // ── Smooth number animation ──
@@ -261,6 +287,29 @@
             if (progress < 1) requestAnimationFrame(step);
         }
         requestAnimationFrame(step);
+    }
+
+    // ── Save to Backend (debounced, only when logged in) ──
+    function scheduleBackendSave(data) {
+        if (_saveDebounce) clearTimeout(_saveDebounce);
+        _saveDebounce = setTimeout(() => saveToBackend(data), 1200);
+    }
+
+    async function saveToBackend(data) {
+        const auth = window.HealthDocAuth;
+        if (!auth || !auth.isLoggedIn()) return;
+        try {
+            await fetch(`${API}/user/nutri-data`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${auth.getToken()}`,
+                },
+                body: JSON.stringify(data),
+            });
+        } catch (_) {
+            // Silently fail — backend may be offline
+        }
     }
 
     // ── Attach all input listeners ──

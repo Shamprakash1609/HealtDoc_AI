@@ -1,0 +1,281 @@
+/* ── Auth Modal — HealthDoc Design System ── */
+
+/* Overlay */
+.auth-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(10, 10, 10, 0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.auth-modal-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Modal Card */
+.auth-modal {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 20px;
+    padding: 32px 32px 24px;
+    background: var(--color-glass-bg);
+    border: 1px solid var(--color-glass-border);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.12);
+    transform: translateY(20px) scale(0.97);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.auth-modal-overlay.visible .auth-modal {
+    transform: translateY(0) scale(1);
+}
+
+/* Header */
+.auth-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.auth-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-family);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.auth-close-btn {
+    width: 32px;
+    height: 32px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--color-text-mutated);
+    transition: background 0.2s, color 0.2s;
+}
+
+.auth-close-btn:hover {
+    background: var(--color-border);
+    color: var(--color-text);
+}
+
+/* Tabs */
+.auth-tabs {
+    display: flex;
+    background: var(--color-surface);
+    border-radius: 12px;
+    padding: 3px;
+    margin-bottom: 24px;
+    gap: 3px;
+}
+
+.auth-tab {
+    flex: 1;
+    font-family: var(--font-family);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 9px;
+    border: none;
+    background: transparent;
+    color: var(--color-text-mutated);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.auth-tab.active {
+    background: #fff;
+    color: var(--color-text);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Form Fields */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.auth-field label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text);
+    font-family: var(--font-family);
+}
+
+.auth-field input {
+    font-family: var(--font-family);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-field input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(0, 232, 126, 0.12);
+}
+
+/* Error */
+.auth-error {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-coral);
+    font-family: var(--font-family);
+    min-height: 18px;
+    text-align: center;
+}
+
+/* Submit button */
+.auth-submit {
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    border-radius: 12px;
+    margin-top: 4px;
+}
+
+/* Disclaimer */
+.auth-disclaimer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--color-text-mutated);
+    font-family: var(--font-family);
+    font-weight: 600;
+    margin-top: 16px;
+}
+
+/* ── User Dropdown Menu ── */
+.user-menu {
+    position: fixed;
+    width: 220px;
+    border-radius: 16px;
+    padding: 6px;
+    background: var(--color-glass-bg);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    z-index: 9998;
+    animation: fadeUp 0.2s ease both;
+}
+
+.user-menu-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--color-accent), var(--color-primary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.user-menu-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text);
+    font-family: var(--font-family);
+}
+
+.user-menu-email {
+    font-size: 12px;
+    color: var(--color-text-mutated);
+    font-family: var(--font-family);
+    font-weight: 600;
+}
+
+.user-menu-divider {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 4px 0;
+}
+
+.user-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    font-family: var(--font-family);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-mutated);
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+}
+
+.user-menu-item:hover {
+    background: rgba(42, 191, 255, 0.08);
+    color: var(--color-text);
+}
+
+.logout-item:hover {
+    background: rgba(255, 123, 114, 0.1);
+    color: var(--color-coral);
+}
+
+/* ── Toast Notification ── */
+.auth-toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--color-text);
+    color: #fff;
+    font-family: var(--font-family);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    white-space: nowrap;
+}
+
+.auth-toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}

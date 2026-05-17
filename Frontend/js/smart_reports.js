@@ -98,6 +98,17 @@ document.getElementById('analyze-report-btn').addEventListener('click', async ()
         showStatus('report-status', 'Analysis Complete!', 'success');
         resultsPanel.classList.add('visible');
 
+        // ── Auto-save to user EHR if logged in ──
+        saveEHRToBackend({
+            filename: data.filename,
+            report_type: 'blood_test',
+            source: 'report',
+            metrics: data.metrics,
+            risks: data.risks,
+            explanation: data.explanation,
+            report_id: data.report_id,
+        });
+
     } catch (error) {
         showStatus('report-status', `Failed: ${error.message}`, 'error');
     } finally {
@@ -212,6 +223,17 @@ document.getElementById('analyze-image-btn').addEventListener('click', async () 
         showStatus('image-status', 'Vision Analysis Complete!', 'success');
         resultsPanel.classList.add('visible');
 
+        // ── Auto-save to user EHR if logged in ──
+        saveEHRToBackend({
+            filename: file.name,
+            report_type: 'medical_image',
+            source: 'image',
+            diagnosis: data.diagnosis,
+            findings: data.findings,
+            explanation: data.explanation,
+            risks: [],
+        });
+
     } catch (error) {
         showStatus('image-status', `Failed: ${error.message}`, 'error');
     } finally {
@@ -219,3 +241,23 @@ document.getElementById('analyze-image-btn').addEventListener('click', async () 
         btn.textContent = 'Analyze Image';
     }
 });
+
+// ── EHR Save Helper ──────────────────────────────────────────────────────────
+const API_BASE = 'http://127.0.0.1:8000';
+
+async function saveEHRToBackend(record) {
+    const auth = window.HealthDocAuth;
+    if (!auth || !auth.isLoggedIn()) return;   // Only save when authenticated
+    try {
+        await fetch(`${API_BASE}/user/ehr`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${auth.getToken()}`,
+            },
+            body: JSON.stringify(record),
+        });
+    } catch (_) {
+        // Silently fail — backend may be offline
+    }
+}
