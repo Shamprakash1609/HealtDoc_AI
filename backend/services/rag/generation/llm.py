@@ -1,13 +1,12 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_ollama import ChatOllama
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from backend.config import GOOGLE_API_KEY
 from typing import List
 from langchain_core.documents import Document
 
 class GenerationService:
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", google_api_key=GOOGLE_API_KEY, temperature=0.3)
+        self.llm = ChatOllama(model="medgemma1.5:4b", temperature=0.3)
         self.prompt = PromptTemplate(
             template="""You are a helpful and intelligent assistant.
 Your goal is to answer the user's question and provide clear explanations using the provided text snippets below.

@@ -17,58 +17,35 @@ from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
-from backend.medical_ai.services.image_analyzer import analyze_medical_image
-from backend.medical_ai.services.ocr_parser import (
+from backend.services.medical.image_analyzer import analyze_medical_image
+from backend.services.medical.ocr_parser import (
     extract_text_from_report,
     ApplicationError,
     ValidationError,
     ResourcesNotFoundError,
     OCREngineError
 )
-from backend.medical_ai.services.clinical_engine import extract_metrics, assess_risks
-from backend.medical_ai.services.report_explainer import explain_report
-from backend.medical_ai.services.chat_assistant import generate_chat_response, ChatQueryError
+from backend.services.medical.clinical_engine import extract_metrics, assess_risks
+from backend.services.medical.report_explainer import explain_report
+from backend.services.medical.chat_assistant import generate_chat_response, ChatQueryError
+
+from backend.models.schemas import ChatQueryRequest
+from backend.views.responses import (
+    ImageAnalysisResponse,
+    ReportAnalysisResponse,
+    ChatQueryResponse
+)
 
 # ─── Constants ────────────────────────────────────────────────────────────────
-MEDICAL_UPLOADS_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "medical_uploads")
-MEDICAL_REPORTS_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "medical_reports")
+# Ensure these folders are created inside the backend directory
+MEDICAL_UPLOADS_DIR = os.path.join(os.path.dirname(__file__), "..", "medical_uploads")
+MEDICAL_REPORTS_DIR = os.path.join(os.path.dirname(__file__), "..", "medical_reports")
 
 ALLOWED_IMAGE_TYPES = {"image/png", "image/jpeg", "image/jpg", "image/tiff", "image/bmp"}
 ALLOWED_REPORT_TYPES = {"application/pdf", "image/png", "image/jpeg", "image/jpg"}
 MAX_FILE_SIZE_MB = 20
 
-# ─── Response Models ──────────────────────────────────────────────────────────
-
-class ImageAnalysisResponse(BaseModel):
-    """Response for medical image analysis."""
-    filename: str
-    description: str
-    findings: list[str]
-    explanation: str
-    importance: str
-
-
-class ReportAnalysisResponse(BaseModel):
-    """Response for medical report analysis."""
-    filename: str
-    metrics: dict[str, Any]
-    risks: list[dict[str, Any]]
-    explanation: str
-    report_id: str
-
-
-from typing import Optional
-
-class ChatQueryRequest(BaseModel):
-    """Incoming request for a medical chat query."""
-    query: str
-    context: Optional[str] = None
-
-
-class ChatQueryResponse(BaseModel):
-    """Outgoing response for a medical chat query."""
-    answer: str
-    suggestions: list[str]
+# (Schemas have been moved to backend.models.schemas and backend.views.responses)
 
 
 # ─── Router ───────────────────────────────────────────────────────────────────
@@ -126,7 +103,7 @@ def _save_report_json(report_data: dict, filename: str) -> str:
 def _embed_summary_in_faiss(summary_text: str, source_name: str):
     """Embed report summary into the existing FAISS vector store."""
     try:
-        from backend.vector_store.store import VectorStore
+        from backend.services.rag.vector_store.store import VectorStore
         from langchain_core.documents import Document
 
         vector_store = VectorStore()
@@ -203,6 +180,7 @@ async def analyze_image_endpoint(file: UploadFile = File(...)):
     except HTTPException:
         raise
     except Exception as e:
+        logger.exception(f"Unexpected Image Analysis Error: {e}")
         raise HTTPException(status_code=500, detail=f"Image analysis failed: {str(e)}")
 
 
@@ -290,9 +268,7 @@ async def analyze_report_endpoint(file: UploadFile = File(...)):
     except HTTPException:
         raise
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        logger.error(f"Unexpected Report Analysis Error: {e}")
+        logger.exception(f"Unexpected Report Analysis Error: {e}")
         raise HTTPException(status_code=500, detail=f"Report analysis failed: {str(e)}")
 
 
@@ -319,7 +295,5 @@ async def medical_chat_endpoint(request: ChatQueryRequest):
         logger.error(f"Chat Query Service Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        logger.error(f"Unexpected Chat Error: {e}")
+        logger.exception(f"Unexpected Chat Error: {e}")
         raise HTTPException(status_code=500, detail=f"Medical chat failed: {str(e)}")

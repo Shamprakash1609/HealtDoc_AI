@@ -1,1 +1,0 @@
-"""Medical AI API routes."""

@@ -1,6 +1,6 @@
 from typing import List
 from langchain_core.documents import Document
-from backend.vector_store.store import VectorStore
+from backend.services.rag.vector_store.store import VectorStore
 
 class RetrievalService:
     def __init__(self, vector_store: VectorStore):

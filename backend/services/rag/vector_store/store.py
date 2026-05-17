@@ -1,13 +1,16 @@
 import os
 from typing import List
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 from backend.config import VECTOR_STORE_PATH
+import logging
+
+logger = logging.getLogger(__name__)
 
 class VectorStore:
     def __init__(self):
-        self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        self.embeddings = OllamaEmbeddings(model="nomic-embed-text")
         self.vector_store_path = VECTOR_STORE_PATH
         self.db = self._load_or_create_index()
 
@@ -18,7 +21,7 @@ class VectorStore:
                 # allow_dangerous_deserialization is set to True as we are loading our own local file
                 return FAISS.load_local(self.vector_store_path, self.embeddings, allow_dangerous_deserialization=True)
             except Exception as e:
-                print(f"Error loading index: {e}. Creating new index.")
+                logger.error(f"Error loading index: {e}. Creating new index.")
                 return None
         return None
 

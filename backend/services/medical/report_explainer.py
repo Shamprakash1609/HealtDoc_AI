@@ -1,25 +1,22 @@
 """
-Report Explainer — Gemini Flash-powered patient-friendly report explanation.
+Report Explainer — Ollama-powered patient-friendly report explanation.
 
-Takes structured metrics and detected risks, sends them to Gemini Flash
+Takes structured metrics and detected risks, sends them to Ollama MedGemma
 for a clear, empathetic explanation a patient can understand.
-
-Uses the project's existing Gemini API key — no additional credentials needed.
 """
 
 import logging
 from typing import Any
 
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_ollama import ChatOllama
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from backend.config import GOOGLE_API_KEY
 
 logger = logging.getLogger(__name__)
 
 # ─── Prompt ──────────────────────────────────────────────────────────────────
 EXPLANATION_PROMPT = PromptTemplate(
-    template="""You are a professional Health Companion. A patient has received their clinical laboratory results and needs a clear, encouraging, and easy-to-understand explanation.
+    template="""You are a professional Health Companion. A patient has received their clinical laboratory results and needs a very brief, encouraging, and easy-to-understand summary.
 
 ## Lab Results
 {metrics_text}
@@ -28,22 +25,19 @@ EXPLANATION_PROMPT = PromptTemplate(
 {risks_text}
 
 ## Your Goal
-Translate these results into a friendly "Personal Health Summary" (50-70 lines). 
-Act like a supportive guide, not just a clinical analyzer.
+Provide a concise "Personal Health Summary" (max 10-15 lines).
+Focus ONLY on the risk flags or areas that need attention. Do NOT explain normal metrics unless necessary for context.
 
 ## Required Sections
-1. Warm Greeting: A brief, friendly introduction.
-2. Understanding Your Markers: Explain every extracted metric using simple analogies (e.g., "Hemoglobin is like a delivery truck for oxygen"). 
-3. Risk & Action Plan: For each flagged risk, explain what it means in simple terms and why it's important.
-4. Simple Precautions & Daily Tips: Provide 3-4 clear, actionable suggestions for food, activity, or habits that anyone can follow.
-5. Next Steps: How urgently should they talk to a doctor? (Routine, Recommended, Immediate).
-6. Professional Encouragement: A positive closing note.
+1. Quick Summary: 1-2 sentences summarizing the overall state.
+2. Areas for Attention: For each flagged risk, briefly explain what it means (skip if no risks).
+3. Simple Precautions: Provide 1-2 simple, actionable tips based ONLY on the flagged risks.
+4. Next Steps: Brief recommendation on whether to consult a doctor.
 
 ## Style Guidelines
 - Use ONLY PLAIN TEXT. NO markdown formatting (no #, ##, or **).
-- Use simple dashes (-) or numbers for lists.
+- Keep it extremely concise and direct. Max 15 lines.
 - Avoid all medical jargon where possible.
-- Minimum 50 lines of helpful, supportive content.
 
 ## Mandatory Cautious Note
 This is an AI summary for informational purposes. It is not a medical diagnosis or medical advice. Please consult your physician.""",
@@ -110,12 +104,11 @@ def explain_report(
     risks: list[dict[str, Any]],
 ) -> str:
     """
-    Generate a layman-friendly explanation of lab results using Gemini Flash.
+    Generate a layman-friendly explanation of lab results using Ollama MedGemma.
     """
     try:
-        llm = ChatGoogleGenerativeAI(
-            model="gemini-flash-latest",
-            google_api_key=GOOGLE_API_KEY,
+        llm = ChatOllama(
+            model="medgemma1.5:4b",
             temperature=0.3,
         )
 
@@ -132,7 +125,7 @@ def explain_report(
         return explanation.strip()
 
     except Exception as e:
-        logger.error(f"[ReportExplainer] Gemini Flash explanation failed: {e}")
+        logger.error(f"[ReportExplainer] Ollama explanation failed: {e}")
         
         # PROACTIVE FALLBACK: Build a high-quality layman summary manually
         summary_parts = ["Personal Health Summary\n"]

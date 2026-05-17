@@ -1,24 +1,23 @@
 """
-Medical Image Analyzer — X-Ray, CT, MRI analysis via MedGemma.
+Medical Image Analyzer — X-Ray, CT, MRI analysis via Ollama.
 
-Processes medical images through the MedGemma vision-language model
+Processes medical images through the Ollama MedGemma model
 to produce structured clinical observations.
 """
 
 import os
 import re
 import json
-import torch
+import base64
+import ollama
+from io import BytesIO
 from PIL import Image
+import logging
 
-from backend.medical_ai.services.medgemma_loader import (
-    get_model,
-    get_processor,
-    get_device,
-)
+logger = logging.getLogger(__name__)
 
 # ─── Constants ────────────────────────────────────────────────────────────────
-MAX_IMAGE_DIMENSION = 768  # Optimized for MPS speed
+MAX_IMAGE_DIMENSION = 768  # Optimized for speed
 
 ANALYSIS_PROMPT = """Analyze this medical image and provide a structured JSON response.
 Act as a professional medical helper for a patient. Identify the main condition in plain English.
@@ -100,35 +99,47 @@ def _resize_if_needed(image: Image.Image) -> Image.Image:
     scale = min(MAX_IMAGE_DIMENSION / width, MAX_IMAGE_DIMENSION / height)
     return image.resize((int(width * scale), int(height * scale)), Image.Resampling.LANCZOS)
 
-
 def analyze_medical_image(image_path: str) -> dict:
-    """Analyze a medical image using MedGemma (Singleton)."""
+    """Analyze a medical image using Ollama MedGemma."""
     if not os.path.exists(image_path):
         raise FileNotFoundError(f"Image not found: {image_path}")
 
     image = Image.open(image_path).convert("RGB")
     image = _resize_if_needed(image)
-
-    model = get_model()
-    processor = get_processor()
-    device = get_device()
     
-    dtype = model.dtype if hasattr(model, "dtype") else torch.bfloat16
-    if device.type == "mps":
-        dtype = torch.bfloat16
+    # Convert image to base64
+    buffered = BytesIO()
+    image.save(buffered, format="JPEG")
+    img_b64_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-    messages = [{"role": "user", "content": [{"type": "image", "image": image}, {"type": "text", "text": ANALYSIS_PROMPT}]}]
-    inputs = processor.apply_chat_template(messages, add_generation_prompt=True, tokenize=True, return_dict=True, return_tensors="pt").to(device, dtype=dtype)
-    input_len = inputs["input_ids"].shape[-1]
-
-    print(f"[MedGemma] Starting High-Resolution generation (max_new_tokens=512)...")
-    with torch.inference_mode():
-        generation = model.generate(**inputs, max_new_tokens=512, do_sample=False, use_cache=True)
+    logger.info(f"[Ollama] Starting Image generation...")
     
-    response = processor.decode(generation[0][input_len:], skip_special_tokens=True).strip()
+    try:
+        response = ollama.chat(
+            model='medgemma1.5:4b',
+            messages=[{
+                'role': 'user',
+                'content': ANALYSIS_PROMPT,
+                'images': [img_b64_str]
+            }],
+            options={
+                'temperature': 0.1,
+            }
+        )
+        
+        response_text = response['message']['content'].strip()
+    except Exception as e:
+        logger.error(f"[Ollama] Error generating image analysis: {e}")
+        return {
+            "description": "Analysis failed",
+            "diagnosis": "Unable to process image",
+            "findings": ["The local model might not support image inputs or encountered an error."],
+            "explanation": str(e),
+            "importance": "N/A"
+        }
 
     # Pre-cleaning: Remove thought blocks
-    cleaned_response = re.sub(r"(?i)<unused\d+>thought.*?(?:\d+\.|$)", "", response, flags=re.DOTALL)
+    cleaned_response = re.sub(r"(?i)<unused\d+>thought.*?(?:\d+\.|$)", "", response_text, flags=re.DOTALL)
     cleaned_response = re.sub(r"(?i)<thought>.*?(?:</thought>|$)", "", cleaned_response, flags=re.DOTALL).strip()
 
     try:
@@ -140,6 +151,6 @@ def analyze_medical_image(image_path: str) -> dict:
             for key in ["description", "diagnosis", "findings", "explanation", "importance"]:
                 if key not in parsed: parsed[key] = "Not identified" if key != "findings" else []
             return parsed
-        return _extract_from_text(response)
+        return _extract_from_text(response_text)
     except Exception:
-        return _extract_from_text(response)
+        return _extract_from_text(response_text)

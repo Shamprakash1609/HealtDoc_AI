@@ -6,10 +6,10 @@ from datetime import datetime
 # Add backend to path
 sys.path.append(os.path.join(os.getcwd(), "backend"))
 
-from backend.medical_ai.services.clinical_engine import extract_metrics, assess_risks
-from backend.medical_ai.services.ocr_parser import extract_text_from_report
-from backend.medical_ai.services.report_explainer import explain_report
-from backend.medical_ai.services.image_analyzer import analyze_medical_image
+from backend.services.medical.clinical_engine import extract_metrics, assess_risks
+from backend.services.medical.ocr_parser import extract_text_from_report
+from backend.services.medical.report_explainer import explain_report
+from backend.services.medical.image_analyzer import analyze_medical_image
 
 def test_report():
     print("\n[TEST] Running Report Analysis Pipeline...")
