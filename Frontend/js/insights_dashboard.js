@@ -1,84 +1,125 @@
 /**
  * insights_dashboard.js — HealthDoc Insights Dashboard
- * Checks auth, fetches /user/dashboard, and renders all sections.
+ *
+ * Checks auth state → fetches ALL user data from backend → renders:
+ *   1. Stats row
+ *   2. Health Risks grid (aggregated from all reports)
+ *   3. EHR Records list (expandable, with full MedGemma AI summary)
+ *   4. NutriPlan summary panel with macro bars
  */
 
 (function () {
     'use strict';
 
     const API = 'http://127.0.0.1:8000';
-
-    // ── DOM helpers ─────────────────────────────────────────────────────────────
     const $ = id => document.getElementById(id);
-    const show = id => { const el = $(id); if (el) el.style.display = ''; };
+    const show = (id, display) => { const el = $(id); if (el) el.style.display = display || ''; };
     const hide = id => { const el = $(id); if (el) el.style.display = 'none'; };
 
     // ── Auth Check ──────────────────────────────────────────────────────────────
     function checkAuth() {
-        // Wait for auth.js to initialise
         const auth = window.HealthDocAuth;
         if (!auth || !auth.isLoggedIn()) {
-            show('auth-gate');
+            show('auth-gate', 'flex');
             hide('dashboard-main');
-            bindGateButtons();
+            bindGateButtons(auth);
             return false;
         }
         hide('auth-gate');
-        show('dashboard-main');
+        show('dashboard-main', 'block');
         return true;
     }
 
-    function bindGateButtons() {
+    function bindGateButtons(auth) {
         const loginBtn    = $('gate-login-btn');
         const registerBtn = $('gate-register-btn');
-        if (loginBtn)    loginBtn.addEventListener('click', () => window.HealthDocAuth.openModal('login'));
-        if (registerBtn) registerBtn.addEventListener('click', () => window.HealthDocAuth.openModal('register'));
+        const open = () => window.HealthDocAuth && window.HealthDocAuth.openModal;
+        if (loginBtn)    loginBtn.addEventListener('click',    () => open() && window.HealthDocAuth.openModal('login'));
+        if (registerBtn) registerBtn.addEventListener('click', () => open() && window.HealthDocAuth.openModal('register'));
     }
 
-    // ── Welcome Section ─────────────────────────────────────────────────────────
+    // ── Welcome Bar ─────────────────────────────────────────────────────────────
     function populateWelcome(user) {
-        const hour = new Date().getHours();
-        const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+        const hour      = new Date().getHours();
+        const greeting  = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
         const firstName = (user?.name || 'there').split(' ')[0];
 
         const heading = $('welcome-heading');
         if (heading) heading.textContent = `${greeting}, ${firstName} 👋`;
 
-        const dateEl = $('today-date');
-        if (dateEl) {
-            dateEl.textContent = new Date().toLocaleDateString('en-US', {
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-            });
-        }
+        const avatarEl = $('welcome-avatar');
+        if (avatarEl) avatarEl.textContent = firstName[0]?.toUpperCase() || 'U';
 
-        // Logout button
+        const dateEl = $('today-date');
+        if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
         const logoutBtn = $('dash-logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-                window.HealthDocAuth.logout();
-                window.location.reload();
-            });
+        if (logoutBtn) logoutBtn.addEventListener('click', () => { window.HealthDocAuth.logout(); window.location.reload(); });
+    }
+
+    // ── Stats ───────────────────────────────────────────────────────────────────
+    function populateStats({ total_reports, total_risks, health_score, last_analysis }) {
+        if ($('stat-reports-val')) $('stat-reports-val').textContent = total_reports ?? 0;
+        if ($('stat-risks-val'))   $('stat-risks-val').textContent   = total_risks ?? 0;
+        if ($('stat-health-val'))  $('stat-health-val').textContent  = `${health_score ?? 100}/100`;
+        if ($('stat-last-val')) {
+            $('stat-last-val').textContent = last_analysis
+                ? new Date(last_analysis).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                : 'Never';
         }
     }
 
-    // ── Stats Row ───────────────────────────────────────────────────────────────
-    function populateStats(data) {
-        const reports     = $('stat-reports-val');
-        const risks       = $('stat-risks-val');
-        const healthScore = $('stat-health-val');
-        const lastDate    = $('stat-last-val');
+    // ── Health Risks Grid ────────────────────────────────────────────────────────
+    function populateRisks(records) {
+        // Collect all risks from all records
+        const allRisks = [];
+        records.forEach(rec => {
+            const risks = rec.risks || [];
+            risks.forEach(r => {
+                allRisks.push({
+                    risk: typeof r === 'string' ? r : (r.risk || JSON.stringify(r)),
+                    severity: r.severity || r.status || 'MEDIUM',
+                    filename: rec.filename || 'Medical Report',
+                    date: rec.saved_at,
+                    source: rec.source,
+                });
+            });
+        });
 
-        if (reports)     reports.textContent     = data.total_reports ?? '0';
-        if (risks)       risks.textContent       = data.total_risks ?? '0';
-        if (healthScore) healthScore.textContent = `${data.health_score ?? 100}/100`;
-        if (lastDate) {
-            if (data.last_analysis) {
-                const d = new Date(data.last_analysis);
-                lastDate.textContent = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            } else {
-                lastDate.textContent = 'Never';
-            }
+        const section = $('risks-section');
+        const grid    = $('risks-grid');
+
+        if (!allRisks.length || !section || !grid) {
+            if (section) section.style.display = 'none';
+            return;
         }
+
+        section.style.display = '';
+        grid.innerHTML = '';
+
+        allRisks.forEach(item => {
+            const high = item.severity === 'HIGH' || item.risk.toLowerCase().includes('critical') || item.risk.toLowerCase().includes('high');
+            const low  = item.severity === 'LOW' || item.severity === 'NORMAL';
+            const sevClass = high ? 'risk-high' : low ? 'risk-low' : 'risk-medium';
+            const sevLabel = high ? 'High Priority' : low ? 'Monitored' : 'Review';
+            const icon = item.source === 'image' ? '🩻' : '🧪';
+            const dateStr = item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+
+            const card = document.createElement('div');
+            card.className = `risk-flag-card ${sevClass}`;
+            card.innerHTML = `
+                <div class="risk-flag-top">
+                    <span class="risk-sev-pill">${sevLabel}</span>
+                    <span class="risk-source-icon">${icon}</span>
+                </div>
+                <div class="risk-flag-title">${item.risk}</div>
+                <div class="risk-flag-meta">
+                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    ${item.filename}${dateStr ? ` · ${dateStr}` : ''}
+                </div>
+            `;
+            grid.appendChild(card);
+        });
     }
 
     // ── EHR Records ─────────────────────────────────────────────────────────────
@@ -96,75 +137,97 @@
 
         const container = $('ehr-list');
         container.innerHTML = '';
-
-        records.forEach((rec, idx) => {
-            const card = createEHRCard(rec, idx);
-            container.appendChild(card);
-        });
+        records.forEach((rec, idx) => container.appendChild(createEHRCard(rec, idx)));
     }
 
     function createEHRCard(rec, idx) {
-        const div = document.createElement('div');
-        div.className = 'ehr-card';
-        div.id = `ehr-card-${idx}`;
+        const isImage    = rec.source === 'image';
+        const risks      = rec.risks || [];
+        const metrics    = rec.metrics || {};
+        const riskCount  = risks.length;
+        const findings   = rec.findings || [];
 
-        const risks     = rec.risks || [];
-        const metrics   = rec.metrics || {};
-        const riskCount = risks.length;
-        const isImage   = rec.source === 'image';
+        const riskClass = riskCount === 0 ? 'risk-none' : riskCount <= 1 ? 'risk-low' : riskCount <= 2 ? 'risk-medium' : 'risk-high';
+        const riskLabel = riskCount === 0 ? 'No Risks' : `${riskCount} Risk${riskCount > 1 ? 's' : ''}`;
 
-        // Risk badge
-        let riskClass = 'risk-none';
-        let riskLabel = 'No Risks';
-        if (riskCount === 1) { riskClass = 'risk-low';    riskLabel = '1 Risk'; }
-        if (riskCount === 2) { riskClass = 'risk-medium'; riskLabel = '2 Risks'; }
-        if (riskCount >= 3)  { riskClass = 'risk-high';   riskLabel = `${riskCount} Risks`; }
-
-        const savedDate = rec.saved_at
+        const dateStr = rec.saved_at
             ? new Date(rec.saved_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
             : 'Unknown date';
 
-        // Metrics preview (first 4)
-        const metricEntries = Object.entries(metrics).slice(0, 4);
-        const metricsHTML = metricEntries.length
-            ? `<div class="ehr-metrics-grid">${metricEntries.map(([key, info]) => `
-                <div class="ehr-metric-chip">
-                    <strong>${info.display || key}</strong>
-                    ${info.value} ${info.unit || ''}
-                </div>`).join('')}</div>`
+        const timeStr = rec.saved_at
+            ? new Date(rec.saved_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
             : '';
 
-        // Risks list
-        const risksHTML = risks.length
-            ? `<div style="margin-bottom:10px; font-size:13px; font-weight:700; color:var(--color-text);">Risk Flags</div>
-               <div class="ehr-risks-list">${risks.map(r => `
-                <div class="ehr-risk-item">
-                    <div class="ehr-risk-dot"></div>
-                    <span>${typeof r === 'string' ? r : (r.risk || JSON.stringify(r))}</span>
-                </div>`).join('')}</div>`
-            : '';
-
-        // Explanation snippet
-        const expText = rec.explanation
-            ? `<div class="ehr-explanation">${rec.explanation.slice(0, 400)}${rec.explanation.length > 400 ? '…' : ''}</div>`
-            : '';
-
-        // Image findings
-        const findingsHTML = isImage && rec.findings && rec.findings.length
-            ? `<div style="margin-bottom:10px; font-size:13px; font-weight:700; color:var(--color-text);">Findings</div>
-               <div class="ehr-risks-list">${rec.findings.map(f => `
-                <div class="ehr-risk-item"><div class="ehr-risk-dot" style="background:var(--color-purple)"></div><span>${f}</span></div>`).join('')}</div>`
-            : '';
-
-        div.innerHTML = `
-            <div class="ehr-card-header" onclick="toggleEHRCard(${idx})">
-                <div class="ehr-card-meta">
-                    <div class="ehr-type-badge ${isImage ? 'ehr-type-image' : 'ehr-type-report'}">
-                        ${isImage ? '🩻' : '🧪'}
+        // Metrics grid (show all)
+        const metricEntries = Object.entries(metrics);
+        const metricsHTML = metricEntries.length ? `
+            <div class="ehr-section-label">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                Biomarkers Extracted
+            </div>
+            <div class="ehr-metrics-grid">
+                ${metricEntries.map(([key, info]) => `
+                    <div class="ehr-metric-chip">
+                        <div class="metric-name">${info.display || key}</div>
+                        <div class="metric-val">${info.value} <span class="metric-unit">${info.unit || ''}</span></div>
                     </div>
-                    <div>
-                        <div class="ehr-filename">${rec.filename || 'Medical Report'}</div>
-                        <div class="ehr-date">${savedDate}</div>
+                `).join('')}
+            </div>` : '';
+
+        // Risks block
+        const risksHTML = risks.length ? `
+            <div class="ehr-section-label" style="color:var(--color-coral);">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                Clinical Risk Flags
+            </div>
+            <div class="ehr-risks-list">
+                ${risks.map(r => {
+                    const label = typeof r === 'string' ? r : (r.risk || JSON.stringify(r));
+                    const metric = typeof r === 'object' && r.metric ? `<span class="risk-metric-tag">${r.metric}: ${r.value} ${r.unit || ''}</span>` : '';
+                    return `<div class="ehr-risk-item"><div class="ehr-risk-dot"></div><span>${label}</span>${metric}</div>`;
+                }).join('')}
+            </div>` : '';
+
+        // Findings (images)
+        const findingsHTML = findings.length ? `
+            <div class="ehr-section-label" style="color:var(--color-purple);">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                Visual Findings
+            </div>
+            <div class="ehr-risks-list">
+                ${findings.map(f => `<div class="ehr-risk-item"><div class="ehr-risk-dot" style="background:var(--color-purple)"></div><span>${f}</span></div>`).join('')}
+            </div>` : '';
+
+        // Diagnosis
+        const diagHTML = rec.diagnosis ? `
+            <div class="ehr-diagnosis-banner">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <strong>Diagnosis:</strong> ${rec.diagnosis}
+            </div>` : '';
+
+        // MedGemma AI Summary (render markdown)
+        const aiHTML = rec.explanation ? `
+            <div class="ehr-section-label ai-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                MedGemma AI Analysis
+            </div>
+            <div class="ehr-ai-summary">
+                ${(typeof marked !== 'undefined') ? marked.parse(rec.explanation) : rec.explanation.replace(/\n/g, '<br>')}
+            </div>` : '';
+
+        const div = document.createElement('div');
+        div.className = 'ehr-card';
+        div.id = `ehr-card-${idx}`;
+        div.innerHTML = `
+            <div class="ehr-card-header" onclick="window._toggleEHR(${idx})">
+                <div class="ehr-type-badge ${isImage ? 'ehr-type-image' : 'ehr-type-report'}">
+                    ${isImage ? '🩻' : '🧪'}
+                </div>
+                <div class="ehr-header-info">
+                    <div class="ehr-filename">${rec.filename || 'Medical Report'}</div>
+                    <div class="ehr-meta-row">
+                        <span class="ehr-date">${dateStr}${timeStr ? ' · ' + timeStr : ''}</span>
+                        <span class="ehr-type-tag">${isImage ? 'Medical Image' : 'Lab Report'}</span>
                     </div>
                 </div>
                 <span class="ehr-risk-pill ${riskClass}">${riskLabel}</span>
@@ -173,19 +236,17 @@
                 </svg>
             </div>
             <div class="ehr-card-body">
-                ${rec.diagnosis ? `<div style="padding:12px; background:rgba(157,78,221,0.06); border:1px solid rgba(157,78,221,0.15); border-radius:10px; margin-bottom:12px; font-size:13px; font-weight:700; color:var(--color-purple);">🔬 Diagnosis: ${rec.diagnosis}</div>` : ''}
+                ${diagHTML}
                 ${metricsHTML}
                 ${risksHTML}
                 ${findingsHTML}
-                ${expText}
+                ${aiHTML}
             </div>
         `;
-
         return div;
     }
 
-    // Expose toggle function globally (called from inline onclick)
-    window.toggleEHRCard = function (idx) {
+    window._toggleEHR = function (idx) {
         const card = document.getElementById(`ehr-card-${idx}`);
         if (card) card.classList.toggle('expanded');
     };
@@ -203,92 +264,109 @@
         hide('nutri-empty');
         show('nutri-panel');
 
-        const panel = $('nutri-panel');
-
         const goalMap = {
             '0': 'Maintain Weight',
             '-0.1': 'Mild Cut (−10%)', '-0.2': 'Cut (−20%)', '-0.3': 'Aggressive Cut (−30%)',
             '0.1': 'Mild Bulk (+10%)', '0.2': 'Bulk (+20%)',
         };
 
-        const goalLabel  = goalMap[String(nutri.goal)] || nutri.goal || 'Maintain';
-        const updatedAt  = nutri.updated_at
-            ? new Date(nutri.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+        const goalLabel = goalMap[String(nutri.goal)] || nutri.goal || 'Maintain';
+        const pPct      = nutri.protein_pct || 0;
+        const fPct      = nutri.fat_pct || 0;
+        const cPct      = nutri.carb_pct || 0;
+        const updatedAt = nutri.updated_at
+            ? new Date(nutri.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
             : '';
 
-        const proteinPct = nutri.protein_pct || 0;
-        const fatPct     = nutri.fat_pct || 0;
-        const carbPct    = nutri.carb_pct || 0;
+        const weeklyDir = nutri.weekly_change_kg > 0 ? '↑ Gaining' : nutri.weekly_change_kg < 0 ? '↓ Losing' : '= Maintaining';
+        const weeklyColor = nutri.weekly_change_kg > 0 ? 'var(--color-accent)' : nutri.weekly_change_kg < 0 ? 'var(--color-coral)' : 'var(--color-text-mutated)';
 
-        panel.innerHTML = `
+        $('nutri-panel').innerHTML = `
             <div class="nutri-summary-card">
-                <div class="nutri-calories-row">
-                    <div>
-                        <div class="nutri-cal-label">Daily Calories</div>
-                        <div class="nutri-cal-value">${(nutri.calories || 0).toLocaleString()}<span class="nutri-cal-unit">kcal</span></div>
-                    </div>
-                    <span class="nutri-goal-pill">${goalLabel}</span>
-                </div>
 
-                <div class="nutri-macros-grid">
-                    <div class="nutri-macro-chip">
-                        <div class="nutri-macro-emoji">🥩</div>
-                        <div class="nutri-macro-val">${nutri.protein_g || 0}g</div>
-                        <div class="nutri-macro-name">Protein</div>
+                <!-- Calorie hero -->
+                <div class="nutri-hero">
+                    <div class="nutri-hero-left">
+                        <div class="nutri-hero-label">Daily Target</div>
+                        <div class="nutri-hero-cal">${(nutri.calories || 0).toLocaleString()}<span class="nutri-hero-unit">kcal</span></div>
+                        <div class="nutri-goal-pill">${goalLabel}</div>
                     </div>
-                    <div class="nutri-macro-chip">
-                        <div class="nutri-macro-emoji">🫒</div>
-                        <div class="nutri-macro-val">${nutri.fat_g || 0}g</div>
-                        <div class="nutri-macro-name">Fat</div>
-                    </div>
-                    <div class="nutri-macro-chip">
-                        <div class="nutri-macro-emoji">🌾</div>
-                        <div class="nutri-macro-val">${nutri.carb_g || 0}g</div>
-                        <div class="nutri-macro-name">Carbs</div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="nutri-bar-row">
-                        <span class="nutri-bar-label">Protein</span>
-                        <div class="nutri-bar-track"><div class="nutri-bar-fill n-protein" id="nd-protein-bar" style="width:0%"></div></div>
-                        <span class="nutri-bar-val">${proteinPct}%</span>
-                    </div>
-                    <div class="nutri-bar-row">
-                        <span class="nutri-bar-label">Fat</span>
-                        <div class="nutri-bar-track"><div class="nutri-bar-fill n-fat" id="nd-fat-bar" style="width:0%"></div></div>
-                        <span class="nutri-bar-val">${fatPct}%</span>
-                    </div>
-                    <div class="nutri-bar-row">
-                        <span class="nutri-bar-label">Carbs</span>
-                        <div class="nutri-bar-track"><div class="nutri-bar-fill n-carb" id="nd-carb-bar" style="width:0%"></div></div>
-                        <span class="nutri-bar-val">${carbPct}%</span>
+                    <div class="nutri-hero-right">
+                        <div class="nutri-ring-stack">
+                            <div class="nutri-ring-item">
+                                <div class="nutri-ring-val">${nutri.protein_g || 0}g</div>
+                                <div class="nutri-ring-label">🥩 Protein</div>
+                            </div>
+                            <div class="nutri-ring-item">
+                                <div class="nutri-ring-val">${nutri.fat_g || 0}g</div>
+                                <div class="nutri-ring-label">🫒 Fat</div>
+                            </div>
+                            <div class="nutri-ring-item">
+                                <div class="nutri-ring-val">${nutri.carb_g || 0}g</div>
+                                <div class="nutri-ring-label">🌾 Carbs</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="nutri-meta-row">
-                    ${nutri.weight_kg ? `<span class="nutri-meta-chip">⚖️ ${nutri.weight_kg} kg</span>` : ''}
-                    ${nutri.height_cm ? `<span class="nutri-meta-chip">📏 ${nutri.height_cm} cm</span>` : ''}
-                    ${nutri.gender    ? `<span class="nutri-meta-chip">${nutri.gender === 'male' ? '♂' : '♀'} ${nutri.gender}</span>` : ''}
-                    ${nutri.bmr       ? `<span class="nutri-meta-chip">🔥 BMR: ${nutri.bmr} kcal</span>` : ''}
-                    ${nutri.tdee      ? `<span class="nutri-meta-chip">⚡ TDEE: ${nutri.tdee} kcal</span>` : ''}
+                <!-- Macro Bars -->
+                <div class="nutri-bars-section">
+                    <div class="nutri-bar-row">
+                        <span class="nutri-bar-label">🥩 Protein</span>
+                        <div class="nutri-bar-track">
+                            <div class="nutri-bar-fill n-protein" id="nd-pb" style="width:0%"></div>
+                        </div>
+                        <span class="nutri-bar-pct">${pPct}%</span>
+                        <span class="nutri-bar-g">${nutri.protein_g || 0}g</span>
+                    </div>
+                    <div class="nutri-bar-row">
+                        <span class="nutri-bar-label">🫒 Fat</span>
+                        <div class="nutri-bar-track">
+                            <div class="nutri-bar-fill n-fat" id="nd-fb" style="width:0%"></div>
+                        </div>
+                        <span class="nutri-bar-pct">${fPct}%</span>
+                        <span class="nutri-bar-g">${nutri.fat_g || 0}g</span>
+                    </div>
+                    <div class="nutri-bar-row">
+                        <span class="nutri-bar-label">🌾 Carbs</span>
+                        <div class="nutri-bar-track">
+                            <div class="nutri-bar-fill n-carb" id="nd-cb" style="width:0%"></div>
+                        </div>
+                        <span class="nutri-bar-pct">${cPct}%</span>
+                        <span class="nutri-bar-g">${nutri.carb_g || 0}g</span>
+                    </div>
                 </div>
-                ${updatedAt ? `<div class="nutri-updated">Last updated: ${updatedAt}</div>` : ''}
+
+                <!-- Breakdown Stats -->
+                <div class="nutri-breakdown-grid">
+                    ${nutri.bmr  ? `<div class="nutri-breakdown-item"><div class="nbd-label">BMR</div><div class="nbd-val">🔥 ${nutri.bmr.toLocaleString()} kcal</div></div>` : ''}
+                    ${nutri.tdee ? `<div class="nutri-breakdown-item"><div class="nbd-label">TDEE</div><div class="nbd-val">⚡ ${nutri.tdee.toLocaleString()} kcal</div></div>` : ''}
+                    ${nutri.weight_kg ? `<div class="nutri-breakdown-item"><div class="nbd-label">Weight</div><div class="nbd-val">⚖️ ${nutri.weight_kg} kg</div></div>` : ''}
+                    ${nutri.height_cm ? `<div class="nutri-breakdown-item"><div class="nbd-label">Height</div><div class="nbd-val">📏 ${nutri.height_cm} cm</div></div>` : ''}
+                    ${nutri.gender ? `<div class="nutri-breakdown-item"><div class="nbd-label">Gender</div><div class="nbd-val">${nutri.gender === 'male' ? '♂️ Male' : '♀️ Female'}</div></div>` : ''}
+                    ${nutri.diet_type ? `<div class="nutri-breakdown-item"><div class="nbd-label">Diet</div><div class="nbd-val">🍽 ${nutri.diet_type}</div></div>` : ''}
+                </div>
+
+                <!-- Weekly Change -->
+                <div class="nutri-weekly-row" style="color:${weeklyColor}">
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                    <strong>${weeklyDir}</strong> — ~${Math.abs(nutri.weekly_change_kg || 0)} kg/week
+                </div>
+
+                ${updatedAt ? `<div class="nutri-updated">⏱ Last saved: ${updatedAt}</div>` : ''}
             </div>
         `;
 
-        // Animate bars after render
+        // Animate bars
         setTimeout(() => {
-            const pb = document.getElementById('nd-protein-bar');
-            const fb = document.getElementById('nd-fat-bar');
-            const cb = document.getElementById('nd-carb-bar');
-            if (pb) pb.style.width = `${proteinPct}%`;
-            if (fb) fb.style.width = `${fatPct}%`;
-            if (cb) cb.style.width = `${carbPct}%`;
-        }, 100);
+            const pb = $('nd-pb'), fb = $('nd-fb'), cb = $('nd-cb');
+            if (pb) pb.style.width = `${pPct}%`;
+            if (fb) fb.style.width = `${fPct}%`;
+            if (cb) cb.style.width = `${cPct}%`;
+        }, 120);
     }
 
-    // ── Main Fetch ──────────────────────────────────────────────────────────────
+    // ── Main Load ────────────────────────────────────────────────────────────────
     async function loadDashboard() {
         const token = window.HealthDocAuth.getToken();
         const user  = window.HealthDocAuth.getCurrentUser();
@@ -296,37 +374,41 @@
         populateWelcome(user);
 
         try {
-            const res = await fetch(`${API}/user/dashboard`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            // Fetch ALL EHR records + NutriPlan + dashboard summary in parallel
+            const [dashRes, ehrRes] = await Promise.all([
+                fetch(`${API}/user/dashboard`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(`${API}/user/ehr`,       { headers: { 'Authorization': `Bearer ${token}` } }),
+            ]);
 
-            if (res.status === 401) {
-                // Token expired — clear and reload
+            if (dashRes.status === 401 || ehrRes.status === 401) {
                 window.HealthDocAuth.logout();
                 window.location.reload();
                 return;
             }
 
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const dashData = await dashRes.json();
+            const ehrData  = ehrRes.ok ? await ehrRes.json() : { records: [] };
 
-            const data = await res.json();
-            populateStats(data);
-            populateEHR(data.recent_records || []);
-            populateNutri(data.nutri_data);
+            const allRecords = ehrData.records || [];
+
+            populateStats(dashData);
+            populateRisks(allRecords);
+            populateEHR(allRecords);
+            populateNutri(dashData.nutri_data);
 
         } catch (err) {
-            console.error('[Dashboard] Failed to load data:', err);
+            console.error('[Dashboard] Load failed:', err);
             hide('ehr-loading');
             hide('nutri-loading');
-            $('ehr-list') && ($('ehr-list').innerHTML = '<div class="empty-state"><p>Unable to connect to the backend. Ensure the server is running at <strong>localhost:8000</strong>.</p></div>');
-            show('ehr-list');
+            const errMsg = `<div class="empty-state"><p style="color:var(--color-coral);">⚠️ Could not connect to backend at <strong>localhost:8000</strong>. Please start the server and refresh.</p></div>`;
+            const ehrList = $('ehr-list');
+            if (ehrList) { ehrList.innerHTML = errMsg; ehrList.style.display = ''; }
+            show('nutri-empty');
         }
     }
 
-    // ── Init ────────────────────────────────────────────────────────────────────
+    // ── Init ─────────────────────────────────────────────────────────────────────
     function init() {
-        // auth.js may have already run (included before this script).
-        // Poll briefly to ensure HealthDocAuth is ready.
         let attempts = 0;
         const check = setInterval(() => {
             attempts++;
@@ -335,17 +417,18 @@
                 if (checkAuth()) {
                     loadDashboard();
                 } else {
-                    // When user logs in via the modal, re-check and load
-                    const interval = setInterval(() => {
-                        if (window.HealthDocAuth.isLoggedIn()) {
-                            clearInterval(interval);
-                            checkAuth();
+                    // Poll for login via modal
+                    const poll = setInterval(() => {
+                        if (window.HealthDocAuth && window.HealthDocAuth.isLoggedIn()) {
+                            clearInterval(poll);
+                            hide('auth-gate');
+                            show('dashboard-main', 'block');
                             loadDashboard();
                         }
-                    }, 500);
+                    }, 600);
                 }
             }
-            if (attempts > 20) clearInterval(check);
+            if (attempts > 30) clearInterval(check);
         }, 100);
     }
 
