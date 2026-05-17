@@ -1,0 +1,594 @@
+/* ── NutriPlan — HealthDoc Design System Extension ── */
+
+/* ── Page Layout ── */
+.nutri-container {
+    padding-top: calc(var(--nav-height) + 48px);
+    padding-bottom: 80px;
+    min-height: 100vh;
+}
+
+.nutri-header {
+    margin-bottom: 40px;
+    animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.nutri-header h1 {
+    font-size: 52px;
+    margin-bottom: 10px;
+    line-height: 1.15;
+}
+
+.nutri-header p {
+    font-size: 18px;
+    color: var(--color-text-mutated);
+    font-weight: 500;
+}
+
+#nutri-tag {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-accent);
+    padding: 4px 14px;
+    background: rgba(0, 232, 126, 0.1);
+    border-radius: 30px;
+    margin-bottom: 14px;
+}
+
+/* Green gradient text variant */
+.gradient-text-green {
+    background: linear-gradient(135deg, var(--color-accent), #00bfaa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ── Two-column grid ── */
+.nutri-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 24px;
+    animation: fadeUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s both;
+}
+
+/* ── Shared Card Base ── */
+.nutri-card {
+    border-radius: 20px;
+    padding: 28px;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+    background: var(--color-glass-bg);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+}
+
+/* ── Settings Card ── */
+.settings-card {
+    border-color: rgba(0, 232, 126, 0.2);
+}
+
+.card-section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    color: var(--color-accent);
+}
+
+.card-section-header h2 {
+    font-size: 20px;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.card-section-header svg {
+    flex-shrink: 0;
+    color: var(--color-accent);
+}
+
+/* ── Form Groups ── */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+}
+
+.form-row.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* ── Label with inline unit toggle ── */
+.label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.label-row label {
+    margin-bottom: 0;
+}
+
+/* ── Unit Toggle Pill ── */
+.unit-toggle {
+    display: flex;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 30px;
+    overflow: hidden;
+    padding: 2px;
+    gap: 2px;
+}
+
+.unit-btn {
+    font-family: var(--font-family);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border: none;
+    background: transparent;
+    color: var(--color-text-mutated);
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.unit-btn.active {
+    background: var(--color-accent);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 232, 126, 0.25);
+}
+
+/* ── Input with Unit ── */
+.input-with-unit {
+    display: flex;
+    align-items: center;
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-with-unit:focus-within {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(0, 232, 126, 0.12);
+}
+
+.input-with-unit input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-family);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text);
+    padding: 12px 14px;
+}
+
+.unit-label {
+    padding: 0 14px 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text-mutated);
+    white-space: nowrap;
+}
+
+/* ── Height ft/in wrapper ── */
+.height-ftin-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* ── Select Wrapper ── */
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper select {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-border);
+    border-radius: 12px;
+    font-family: var(--font-family);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text);
+    padding: 12px 40px 12px 14px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.select-wrapper select:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(0, 232, 126, 0.12);
+}
+
+.select-chevron {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-mutated);
+    pointer-events: none;
+}
+
+/* ── Fat/Carb Slider ── */
+.slider-track-wrapper {
+    padding-top: 4px;
+}
+
+#fat-carb-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--color-gold), var(--color-primary));
+    outline: none;
+    cursor: pointer;
+    margin-bottom: 8px;
+}
+
+#fat-carb-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border: 2.5px solid var(--color-accent);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#fat-carb-slider::-webkit-slider-thumb:hover {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 4px rgba(0, 232, 126, 0.15);
+}
+
+#fat-carb-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border: 2.5px solid var(--color-accent);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text-mutated);
+}
+
+/* ── Results Card ── */
+.results-card {
+    border-color: rgba(42, 191, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Result Sections */
+.result-section {
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 18px;
+}
+
+.result-section:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.result-section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.result-section-header h3 {
+    font-size: 18px;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.accent-icon {
+    color: var(--color-gold);
+}
+
+.result-section-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 14px;
+}
+
+/* Calories Display */
+.calories-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text-mutated);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+}
+
+.calories-value-box {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    justify-content: center;
+}
+
+.calories-big {
+    font-size: 40px;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.03em;
+    transition: all 0.4s ease;
+}
+
+.calories-unit {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text-mutated);
+}
+
+/* Macros Grid */
+.macros-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+.macro-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.macro-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+.protein-card { border-color: rgba(255,123,114,0.25); }
+.fat-card     { border-color: rgba(246,193,119,0.25); }
+.carb-card    { border-color: rgba(42,191,255,0.25); }
+
+.macro-emoji {
+    font-size: 22px;
+    margin-bottom: 6px;
+    line-height: 1;
+}
+
+.macro-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.03em;
+    transition: all 0.4s ease;
+    line-height: 1.1;
+}
+
+.macro-unit {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-mutated);
+}
+
+.macro-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-text-mutated);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 4px 0 2px;
+}
+
+.protein-card .macro-pct { color: var(--color-coral); }
+.fat-card     .macro-pct { color: var(--color-gold); }
+.carb-card    .macro-pct { color: var(--color-primary); }
+
+.macro-pct {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* ── Macro Progress Bars ── */
+.macro-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px 0;
+}
+
+.macro-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.bar-label {
+    width: 56px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text-mutated);
+    flex-shrink: 0;
+}
+
+.bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--color-surface);
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.protein-bar { background: linear-gradient(90deg, var(--color-coral), #ff9a8b); }
+.fat-bar     { background: linear-gradient(90deg, var(--color-gold), #f0d080); }
+.carb-bar    { background: linear-gradient(90deg, var(--color-primary), var(--color-link)); }
+
+.bar-value {
+    width: 44px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-text-mutated);
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* ── Weekly Change ── */
+.weekly-change-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 6px;
+}
+
+.weekly-change-val {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+    transition: all 0.4s ease;
+}
+
+.weekly-change-desc {
+    font-size: 13px;
+    color: var(--color-text-mutated);
+    font-weight: 600;
+    text-align: center;
+}
+
+/* ── Breakdown ── */
+.breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.breakdown-key {
+    color: var(--color-text-mutated);
+    font-weight: 600;
+}
+
+.breakdown-val {
+    color: var(--color-text);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-left: 12px;
+}
+
+/* ── Disclaimer ── */
+.disclaimer {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 14px;
+    background: rgba(42, 191, 255, 0.06);
+    border: 1px solid rgba(42, 191, 255, 0.15);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--color-text-mutated);
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.disclaimer svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: var(--color-primary);
+}
+
+/* ── Animations ── */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+    .nutri-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nutri-header h1 {
+        font-size: 36px;
+    }
+}
+
+@media (max-width: 640px) {
+    .macros-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+    }
+
+    .macro-value {
+        font-size: 20px;
+    }
+
+    .calories-big {
+        font-size: 30px;
+    }
+
+    .form-row.two-col {
+        grid-template-columns: 1fr;
+    }
+}
