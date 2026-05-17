@@ -12,6 +12,18 @@
     const TOKEN_KEY = 'healthdoc_token';
     const USER_KEY  = 'healthdoc_user';
 
+    // ── DEV DEFAULT: Auto-login as John Wick if no session exists ───────────────
+    // This is a pre-seeded user in backend/database/. Remove this block in production.
+    const DEV_TOKEN = 'jw-dev-token-healthdoc-2026';
+    const DEV_USER  = { name: 'John Wick', email: 'jhon141@gmail.com' };
+
+    if (!localStorage.getItem(TOKEN_KEY)) {
+        localStorage.setItem(TOKEN_KEY, DEV_TOKEN);
+        localStorage.setItem(USER_KEY, JSON.stringify(DEV_USER));
+        console.info('[HealthDoc] Dev mode: auto-logged in as John Wick');
+    }
+    // ────────────────────────────────────────────────────────────────────────────
+
     // ── Public API ──────────────────────────────────────────────────────────────
     window.HealthDocAuth = {
         getToken:       () => localStorage.getItem(TOKEN_KEY),
