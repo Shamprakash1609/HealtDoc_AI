@@ -15,7 +15,7 @@ from datetime import datetime, timedelta, timezone
 # ── Config ──────────────────────────────────────────────────────────────────────
 DEV_USER = {
     "name":     "John Wick",
-    "email":    "jhon141@gmail.com",
+    "email":    "john141@gmail.com",
     "password": "12345678",
 }
 
